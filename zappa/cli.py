@@ -121,6 +121,7 @@ class ZappaCLI:
     additional_text_mimetypes = None
     tags = []
     layers = None
+    alb_arn=None
 
     stage_name_env_pattern = re.compile("^[a-zA-Z0-9_]+$")
 
@@ -1112,6 +1113,15 @@ class ZappaCLI:
         # Update any cognito pool with the lambda arn
         # do this after schedule as schedule clears the lambda policy and we need to add one
         self.update_cognito_triggers()
+
+        #UPDATE LOAD BALANCER
+        if self.alb_arn:
+            self.zappa.lambda_client.add_permission(FunctionName=self.lambda_name,
+                        StatementId=f'AllowLambda{self.lambda_name}ToBeTriggeredByLoadBalancer',
+                        Action='lambda:InvokeFunction',
+                        Principal='elasticloadbalancing.amazonaws.com',
+                        SourceArn=f'{self.alb_arn}')
+
 
         self.callback("post")
 
@@ -2243,6 +2253,8 @@ class ZappaCLI:
         self.cognito = self.stage_config.get("cognito", None)
         self.num_retained_versions = self.stage_config.get("num_retained_versions", None)
 
+        #added direc
+
         # Check for valid values of num_retained_versions
         if self.num_retained_versions is not None and type(self.num_retained_versions) is not int:
             raise ClickException(
@@ -2295,6 +2307,9 @@ class ZappaCLI:
         # Load ALB-related settings
         self.use_alb = self.stage_config.get("alb_enabled", False)
         self.alb_vpc_config = self.stage_config.get("alb_vpc_config", {})
+
+        #UPDATE
+        self.alb_arn = self.stage_config.get("alb_arn", "")
 
         # Additional tags
         self.tags = self.stage_config.get("tags", {})
