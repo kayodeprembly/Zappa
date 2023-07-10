@@ -1123,7 +1123,8 @@ class ZappaCLI:
                         SourceArn=f'{self.alb_arn}')
             
 
-            self.zappa.elbv2_client.register_targets(
+            #deregister target
+            self.zappa.elbv2_client.deregister_targets(
                         TargetGroupArn=f'{self.alb_arn}',
                         Targets=[
                             {
@@ -1132,6 +1133,20 @@ class ZappaCLI:
                             },
                         ]
                 )
+            
+            #register target
+            self.zappa.elbv2_client.register_targets(
+                        TargetGroupArn=f'{self.alb_arn}',
+                        Targets=[
+                            {
+                                'Id':f'{self.lambda_arn}',
+                            
+                            },
+                        ]
+            )
+
+
+                
 
 
         self.callback("post")
