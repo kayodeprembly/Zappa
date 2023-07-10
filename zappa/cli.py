@@ -1121,6 +1121,17 @@ class ZappaCLI:
                         Action='lambda:InvokeFunction',
                         Principal='elasticloadbalancing.amazonaws.com',
                         SourceArn=f'{self.alb_arn}')
+            
+
+            self.zappa.elbv2_client.register_targets(
+                        TargetGroupArn=f'{self.alb_arn}',
+                        Targets=[
+                            {
+                                'Id':f'{self.lambda_arn}',
+                            
+                            },
+                        ]
+                )
 
 
         self.callback("post")
