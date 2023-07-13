@@ -1158,7 +1158,7 @@ class ZappaCLI:
 
 
             self.zappa.lambda_client.add_permission(FunctionName=self.lambda_name,
-                        StatementId=f'AllowLambda{self.lambda_name}-{self.api_stage}ToBeTriggeredByAPIgateway',
+                        StatementId=f'AllowLambda{self.lambda_name}-{self.api_stage}-proxyToBeTriggeredByAPIgateway',
                         Action='lambda:InvokeFunction',
                         Principal='apigateway.amazonaws.com',
                         SourceArn=f'{self.gateway_arn}/*')
