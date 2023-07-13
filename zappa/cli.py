@@ -1155,10 +1155,15 @@ class ZappaCLI:
                         Action='lambda:InvokeFunction',
                         Principal='apigateway.amazonaws.com',
                         SourceArn=f'{self.gateway_arn}')
-            
 
-        
-                
+
+            self.zappa.lambda_client.add_permission(FunctionName=self.lambda_name,
+                        StatementId=f'AllowLambda{self.lambda_name}-{self.api_stage}ToBeTriggeredByAPIgateway',
+                        Action='lambda:InvokeFunction',
+                        Principal='apigateway.amazonaws.com',
+                        SourceArn=f'{self.gateway_arn}/*')
+
+
 
 
         self.callback("post")
