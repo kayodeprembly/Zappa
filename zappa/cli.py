@@ -122,6 +122,7 @@ class ZappaCLI:
     tags = []
     layers = None
     alb_arn=None
+    gateway_arn=None
 
     stage_name_env_pattern = re.compile("^[a-zA-Z0-9_]+$")
 
@@ -1146,6 +1147,17 @@ class ZappaCLI:
             )
 
 
+
+        #UPDATE API GATEWAY
+        if self.gateway_arn:
+            self.zappa.lambda_client.add_permission(FunctionName=self.lambda_name,
+                        StatementId=f'AllowLambda{self.lambda_name}-{self.api_stage}ToBeTriggeredByAPIgateway',
+                        Action='lambda:InvokeFunction',
+                        Principal='apigateway.amazonaws.com',
+                        SourceArn=f'{self.gateway_arn}')
+            
+
+        
                 
 
 
@@ -2336,6 +2348,7 @@ class ZappaCLI:
 
         #UPDATE
         self.alb_arn = self.stage_config.get("alb_arn", "")
+        self.gateway_arn = self.stage_config.get("gateway_arn", "")
 
         # Additional tags
         self.tags = self.stage_config.get("tags", {})
